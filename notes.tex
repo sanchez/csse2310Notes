@@ -1,0 +1,214 @@
+\documentclass[number]{notes}
+\usepackage{titlepage}
+\usepackage{ncolor}
+\usepackage{math}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{pdflscape}
+
+\setprimary{purple}
+
+\name{Daniel}{Fitzmaurice}
+\studentnumber{43961229}
+\coursecode{csse2310}
+
+\linespread{1}
+\setlength{\columnseprule}{0.4pt}
+
+\begin{document}
+\begin{landscape}
+\headfoot
+\begin{multicols}{3}
+
+\heading{Function Pointers}
+\texttt{int (*fp)(int, char*)} - Declares fp to be a pointer to a function which takes int and char* arguments and returns int\\
+\texttt{void (*fp2[10])(double)} - Declares fp2 to be an array (of size 10) of pointers to functions taking a double parameter and returning nothing\\
+\texttt{int (*fp3)()} - Declares fp3 to be a pointer to a function returning int. Argument types unknown and won't be checked by the compiler (Up to programmer to use this correctly).
+
+\heading{Storage classes}
+\subheading{auto}
+\begin{itemize}[nolistsep]
+    \item Variable has local (automatic) extent, i.e. removed at end of block
+    \item Permitted within a block only (i.e. not top level)
+    \item This is the default so rarely seen
+\end{itemize}
+\subheading{extern}
+\begin{itemize}[nolistsep]
+    \item Variable/function is external to all functions, i.e. can be accessed by name by any function
+    \item Globally accessible - linker must know about the name
+    \item Must be defined once somewhere (can be declared anywhere)
+\end{itemize}
+\subheading{register}
+\begin{itemize}[nolistsep]
+    \item Hint to compiler to put variable in a register, otherwise like auto
+\end{itemize}
+\subheading{static}
+\begin{itemize}[nolistsep]
+    \item Name is only accessible in this file (i.e. not exported to linker)
+    \item For variables - extent is static - variable lasts for life of program
+\end{itemize}
+
+\heading{5 Views of OS}
+\begin{enumerate}[nolistsep]
+    \item Hardware
+    \item Operating System Designer
+    \item Application Programmer
+    \item End-User
+    \item System Administrator
+\end{enumerate}
+
+\heading{Environment Variables}
+\textbf{HOME} - full pathname of home directory\\
+\textbf{PATH} - colon separated list of pathnames to search for commands\\
+\textbf{USER} - your username\\
+\textbf{SHELL} - full pathname of your login shell
+\subheading{Local Variable}
+\texttt{courseCode=CSSE2310}\\
+\subheading{Environment Variable}
+\texttt{export courseCode}
+
+\heading{Metacharacters}
+\subheading{WildCards}
+\textbf{*} - zero or more characters\\
+\textbf{?} - any single character\\
+\subheading{Comment}
+\textbf{\#} - start of comment (goes till end of line)
+\subheading{Running Commands}
+\textbf{\&} - run command in background\\
+\textbf{;} - used to separate commands\\
+\textbf{`command`} - substitute result of running command
+\subheading{Variable Substitution}
+\textbf{\$varname} - substitute value of variable
+\subheading{SubShell}
+\textbf{(...commands...)} - execute commands in a sub-shell
+\subheading{Conditional sequences}
+\textbf{||} - execute command if previous command failed\\
+\textbf{\&\&} - execute command if previous one succeeded\\
+A success is when the program returns an exit code 0
+\subheading{Redirection and Pipes}
+\textbf{|} - pipe, output of one program sent to the input of the next\\
+\textbf{>} - send stdout to file\\
+\textbf{<} - write stdin from file\\
+\textbf{>>} - append stdout to file
+\subheading{Quoting}
+Single Quotes - inhibit wildcard replacement, variable substitution, command substitution.\\
+Double Quotes - inhibit wildcard replacement only.\\
+Can also use backslashes.
+
+\heading{Shell Scripting}
+\subheading{Shell Arithmetic}
+Use \texttt{expr EXPRESSION} command. Result is printed to stdout.
+\subheading{Shell Conditional}
+Use \texttt{text EXPRESSION} or \texttt{[ EXPRESSION ]}. \texttt{EXPRESSION} follows \texttt{INT1 option INT2} where option can be: \texttt{-eq} (equals), \texttt{-ge} (greater than or equal), \texttt{-gt} (greater than), \texttt{-le} (less than or equal), \texttt{-lt} (less than), \texttt{-ne} (not equal). Result is exit code 1 for false and 0 for true.
+\subheading{Control Structures}
+\subsubheading{For Loop}
+\texttt{for name [ in \textit{word...} ]\\do\\\textit{commands...}\\done}
+If words omitted, uses script arguments.\\
+\subsubheading{While Loop}
+\texttt{while \textit{command1}\\do\\\textit{command2}\\done}\\
+\subsubheading{If Then Else}
+\texttt{if \textit{command1}\\then\\\textit{command2}\\elif \textit{command3}\\then\\\textit{command4}\\else\\\textit{command5}\\fi}\\
+\subsubheading{Other Control Structures}
+Case. Until - do - done. Done.
+
+
+\heading{Built-in Shell Variables}
+\textbf{\$\$} - process ID of shell\\
+\textbf{\$0} - name of the shell script\\
+\textbf{\$1\ldots\$9} - command line arguments\\
+\textbf{\$*} - all the command line arguments\\
+\textbf{\$\#} - number of command line arguments (excludes command name)\\
+\textbf{\$?} - exit status of last command\\
+\textbf{\$!} - process ID of last background command
+
+\heading{Paging}
+One of several methods of implementing virtual memory. Divide physical memory into fixed-sized blocks called page frames (size is power of 2, usually between 512 bytes and 8192 bytes). Divide logical memory into blocks of same size called pages. Keep track of all free frames. To run a program of n pages, need to find n free frames and load program. Set up a page table to translate logical to physical addresses.
+\subheading{Address Translation Scheme}
+\textbf{Page Number} (p) - used as an index into a page table which contains base address of each page in physical memory\\
+\textbf{Page Offset} (d) - combined with base address to define the physical memory address that is sent to the memory unit
+\includegraphics[width=0.5\linewidth]{pageTable.png}
+\subheading{Implementation of Page Table}
+Page table is kept in main memory. The two memory access problem can be solved by the use of a special fast-lookup hardware cache called associative memory or translation look-aside buffers (TLBs)
+\includegraphics[width=\linewidth]{TLB.png}
+\subsubheading{Page Faults}
+If the TLB entry doesn't exist, then load it into the table
+\subheading{Memory Protection}
+Memory protection implemented by associating protection bit with each frame.
+\subheading{Segmentation Faults}
+Segmentation Fault arises when: Accessing invalid memory page, Trying to write to a read-only page.
+\subheading{Shared Pages}
+\subsubheading{Shared code}
+One copy of read-only code shared among processes. Shared code must appear in same location in the virtual address space of all processes.\\
+\subsubheading{Private code and data}
+Each process keeps a separate copy of the code and data. The pages for the private code and data can appear anywhere in the virtual address space.
+% TODO: add page table calc examples
+\subheading{User-space vs Kernel}
+The operating system controls the address ranges (pages) a process can use. It does not decide how that space is used. Management of those pages is the responsibility of the process (Usually vie standard libraries).
+
+\heading{Memory-Related Bugs}
+\begin{itemize}
+    \item Dereferencing bad pointers
+    \item Reading uninitialized memory
+    \item Overwriting memory
+    \item Referencing nonexistent variables
+    \item Freeing blocks multiple times
+    \item Referencing freed blocks
+    \item Failing to free blocks
+\end{itemize}
+
+\heading{Processes}
+\subheading{fork}
+\texttt{int fork(void)} - creates a new process. Returns 0 to the child process else return child's pid.\\
+Common for the parent to be the only one to continue forking
+\subheading{exit}
+\texttt{void exit(int status)} - exits a process (status 0 for no error)\\
+\texttt{\_exit()} - will not run the registered exit functions
+\subheading{atexit}
+\texttt{atexit(void (*func)(void))} - registers functions to be executed upon exit. Functions called in reverse order of registration.
+\subheading{wait}
+\texttt{int wait(int\* child\_status)} - suspends process until child process terminates. Return the exit code, if child\_status is \texttt{NULL} then any child process.
+\subheading{waitpid}
+\texttt{waitpid(pid, \&status, options)} - can wait for a specific process. Various options (default is 0)
+\subheading{exec}
+\texttt{int execl(char *path, char *arg0, char *arg1, ..., 0)} - loads and runs executable at path with args arg0, arg1... (path is the complete path of the executable, arg0 becomes the name of the process).
+\subsubheading{exec variations}
+\texttt{execl()}, \texttt{execve()}, \texttt{execv()}, \texttt{execlp()}, \texttt{execle()}, \texttt{execvp()}\\
+\textbf{l} - arguments directly in call (list)\\
+\textbf{v} - arguments in array (vector)\\
+\textbf{p} - use PATH to find program\\
+\textbf{e} - provide environment definition
+\subheading{Resource Sharing}
+\begin{itemize}
+    \item Parent and children share all resources
+    \item Children share subset of parent's resources
+    \item Parent and child share no resources
+\end{itemize}
+\subheading{Unix Process Hierarchy}
+\includegraphics[width=\linewidth]{processHierarchy.png}
+
+\heading{Files}
+\subheading{Unix File Types}
+\subsubheading{Regular file}
+Binary or text file. Unix does not know the difference\\
+\subsubheading{Directory file}
+A file that contains the names and locations of other files\\
+\subsubheading{Links}
+Symbolic links to other files\\
+\subsubheading{Character special and block special files}
+Terminals (character special) and disks (block special)\\
+\subsubheading{FIFO (named pipe)}
+A file type used for interprocess communication\\
+\subsubheading{Socket}
+A file type used for network communication between processes
+\subheading{Sharing Files}
+A child process inherits its parent's open files. \texttt{refcnt} counts the number of references.
+
+\heading{Piping}
+\subheading{I/O Redirection}
+\subsubheading{dup2}
+\texttt{dup2(oldfd, newfd)} - copies per-process descriptor table entry oldfd to entry newfd.
+
+\end{multicols}
+\end{landscape}
+\end{document}
