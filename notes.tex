@@ -6,6 +6,23 @@
 \usepackage{multicol}
 \usepackage{float}
 \usepackage{pdflscape}
+\usepackage{listings}
+
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=l,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+  numbers=left
+}
+\lstset{escapechar=@,style=customc}
 
 \setprimary{purple}
 
@@ -208,6 +225,34 @@ A child process inherits its parent's open files. \texttt{refcnt} counts the num
 \subheading{I/O Redirection}
 \subsubheading{dup2}
 \texttt{dup2(oldfd, newfd)} - copies per-process descriptor table entry oldfd to entry newfd.
+\subheading{Example}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+int fdInput[2], fdOutput[2];
+if (pipe(fdInput) == 0 && pipe(fdOutput) == 0) {
+    int pid = fork();
+    if (pid == 0) {
+        //Child
+        close(fdOutput[1]);
+        close(fdInput[0]);
+        dup2(fdOutput[0], STDIN_FILENO);
+        dup2(fdInput[1], STDOUT_FILENO);
+        if (execl(processName, processName, arg1,
+                arg2, NULL) == -1) {
+            error(SUBPROCESS_ERROR);
+        }
+    } else {
+        //Parent
+        childPid = pid;
+        close(fdInput[1]);
+        close(fdOutput[0]);
+        input = fdopen(fdInput[0], "r");
+        output = fdopen(fdOutput[1], "w");
+    }
+}
+return
+\end{lstlisting}
+\end{minipage}
 
 \end{multicols}
 \end{landscape}
