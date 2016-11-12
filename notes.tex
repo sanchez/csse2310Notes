@@ -207,15 +207,15 @@ Common for the parent to be the only one to continue forking
 \heading{Files}
 \subheading{Unix File Types}
 \subsubheading{Regular file}
-Binary or text file. Unix does not know the difference\\
+Binary or text file. Unix does not know the difference
 \subsubheading{Directory file}
-A file that contains the names and locations of other files\\
+A file that contains the names and locations of other files
 \subsubheading{Links}
-Symbolic links to other files\\
+Symbolic links to other files
 \subsubheading{Character special and block special files}
-Terminals (character special) and disks (block special)\\
+Terminals (character special) and disks (block special)
 \subsubheading{FIFO (named pipe)}
-A file type used for interprocess communication\\
+A file type used for interprocess communication
 \subsubheading{Socket}
 A file type used for network communication between processes
 \subheading{Sharing Files}
@@ -253,6 +253,58 @@ if (pipe(fdInput) == 0 && pipe(fdOutput) == 0) {
 return
 \end{lstlisting}
 \end{minipage}
+
+\heading{Threads}
+A process may have multiple threads of control. Threads share code, data, open files etc (they have separate control flows).
+\subheading{Threads vs Processes}
+\subsubheading{Similarities}
+Each has its own logical control flow. Each can run concurrently. Each is context switched.
+\subsubheading{Differences}
+Threads share code and data, processes (typically) do not. Threads are somewhat less expensive than processes.
+\includegraphics[width=\linewidth]{singlevsmulti.png}
+\subheading{Multithreading Models}
+\subsubheading{Many-to-One (User Threads)}
+Threads implemented in user space. OS knows nothing about them\\
+\subsubheading{One-to-One}
+Threads implemented in kernel space, one kernel thread per user thread\\
+\subsubheading{Many-to-Many}
+Hybrid model
+\subheading{Functions}
+\subsubheading{pthread\_create}
+\texttt{pthread\_create} takes a function pointer to start the thread\\
+\subsubheading{pthread\_join}
+\texttt{pthread\_join} waits for a specific thread
+\begin{lstlisting}
+int main() {
+    pthread_t tid;
+    pthread_create(&tid, NULL, thread1, NULL);
+    pthread_join(tid, NULL);
+    printf("Hello from first\n");
+    exit(0);
+}
+
+void* thread1(void* vargp) {
+    printf("Hello from second\n");
+    return NULL;
+}
+\end{lstlisting}
+\subsubheading{pthread\_self}
+Returns the ID of the calling thread\\
+\subsubheading{pthread\_exit}
+Exits the calling thread\\
+\subsubheading{pthread\_cancel}
+\texttt{int pthread\_cancel(pthread\_t thread)} - sends a cancel request to thread\\
+\subsubheading{pthread\_detach}
+\texttt{int pthread\_detach(pthread\_t thread)} - marks the thread as detached\\
+\subsubheading{pthread\_join}
+\texttt{int pthread\_join(pthread\_t thread, void ** retval)} - waits for thread to finish
+\subheading{Thread Lifecycle}
+Ready $\rightarrow$ Running $\rightarrow$ Blocked $\rightarrow$ Terminated
+
+\heading{Shared Data}
+\textbf{Global variables} - one copy per process\\
+\textbf{Local variables} - one copy per thread\\
+\textbf{Static variables} - one copy per process
 
 \end{multicols}
 \end{landscape}
