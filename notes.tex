@@ -440,6 +440,35 @@ Iterative servers process one request as a time
 \subsubheading{Thread Based Design}
 + Easier to share data between threads (may need mutexes/semaphores)\\
 - Do have thread overhead
+\subheading{Event-Based Concurrent Servers}
+Maintain a set of connected descriptors and service each as new data arrives. Repeat the following forever:
+\begin{itemize}[nolistsep]
+    \item Use the Unix \texttt{select()} function to block until:
+    \begin{enumerate}[nolistsep]
+        \item new connection request arrives on the listening descriptor, or
+        \item new data arrives on an existing connected descriptor
+    \end{enumerate}
+    \item If 1. add the new connection to the pool of connections
+    \item If 2. read any available data from the connection (close connection on EOF and remove it from the set)
+\end{itemize}
+\subsubheading{select}
+\texttt{int select(int maxfdp1, fd\_set *readset, NULL, NULL, NULL)} - sleeps until one or more file descriptors in the set are ready for reading.\\
+\texttt{readset} - opaque bit vector that indicates membership in a descriptor set. If bit k is 1, descriptor k is a member of the descriptor set\\
+\texttt{maxfdp1} - maximum descriptor in descriptor set plus 1\\
+Returns the number of ready descriptors and sets each bit of \texttt{readset} to indicate the ready status of corresponding descriptor.
+\subsubheading{Manipulating Set Descriptors (Macros)}
+\texttt{void FD\_ZERO(fd\_set *fdset)} - turn off all bits in \texttt{fdset}\\
+\texttt{void FD\_SET(int fd, fd\_set *fdset)} - turn on bit \texttt{fd} in \texttt{fdset}\\
+\texttt{void FD\_CLR(int fd, fd\_set *fdset)} - turn off bit \texttt{fd} in \texttt{fdset}\\
+\texttt{int FD\_ISSET(int fd, fd\_set *fdset)} - is bit \texttt{fd} in \texttt{fdset} turned on
+\subsubheading{Pros and Cons}
++ One logical control flow\\
++ Can single-step with a debugger\\
++ No process or thread control overhead\\
+- More complex to code than process or thread-based designs\\
+- Can be vulnerable to denial of service attack if not implemented correctly
+\subsubheading{poll}
+Does the same thing as select, but different interface.
 
 \heading{Ways for Creating Concurrent Flows}
 \begin{enumerate}[nolistsep]
