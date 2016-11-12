@@ -305,6 +305,161 @@ Ready $\rightarrow$ Running $\rightarrow$ Blocked $\rightarrow$ Terminated
 \textbf{Global variables} - one copy per process\\
 \textbf{Local variables} - one copy per thread\\
 \textbf{Static variables} - one copy per process
+\subheading{Critical Section}
+A critical section of a thread is a segment of code that shouldn't be interleaved with another thread's critical section. \textit{Note that these threads could be in different processes.} Concurrent access to shared data may result in data inconsistency.
+\subsubheading{Semaphores}
+Associate a semaphore S initially 1, with each shared variable (or set of shared variables). Surround corresponding critical section with \texttt{wait(S)} and \texttt{signal(S)} operations. This is a binary semaphore. Semaphore ensures mutually exclusive access to critical region.
+
+\heading{Networking}
+\subheading{Client-Server Model}
+Most network applications are based on the client-server model: A server process and one or more client processes.
+\subheading{TCP/IP}
+Protocol = Rules for communication\\
+TCP = Transmission Control Protocol. Provides communication between ports on two computers (bidirectional, point-to-point, reliable, byte stream). Uses IP (Internet Protocol) to transmit small packets of data between two IP addresses.
+\subsubheading{TCP Connections}
+Identified by: Source IP address, Source port number, Destination IP address, Destination port number.\\
+\subsubheading{IP Addresses (v4)}
+32-bit numbers. Often written in dotted decimal notation for human consumption (e.g. 130.102.2.15)
+\subsubheading{Port Numbers}
+16 bits: 0 - 65535. Below 1024, well known ports, reserved for standard services.
+\subsubheading{Sockets}
+A socket is a communication endpoint; associated with a file descriptor in UNIX - can do file I/O on socket, main distinction between regular file I/O and socket I/O is how the application ``opens'' the socket descriptors.
+\includegraphics[width=\linewidth]{sockets.png}
+\texttt{socket(...)} - create a new communication end-point\\
+\texttt{bind(...)} - attach a local address to a socket\\
+\texttt{listen(...)} - willing to accept connections, give queue size\\
+\texttt{accept(...)} - wait for a connection attempt to arrive\\
+\texttt{connect(...)} - attempt to establish a connection\\
+\texttt{send(...)} or \texttt{write(...)} - send data over the connection\\
+\texttt{recv(...)} or \texttt{read(...)} - receive data over the connection\\
+\texttt{sendto(...)} - send datagram (UDP)\\
+\texttt{recvfrom(...)} - receive datagram (UDP)\\
+\texttt{close(...)} - release the connection\\
+\texttt{shutdown(...)} - close down one side of connection (or both sides)
+\subsubheading{Creating a Socket}
+\texttt{AF\_INET} - indicates that the socket is associated with Internet Protocols\\
+\texttt{SOCK\_STREAM} - selects a reliable byte stream connection (TCP)
+\begin{lstlisting}
+int fd = socket(AF_INET, SOCK_STREAM, 0);
+if (fd < 0) {
+    perror("Socket creation failed");
+    exit(1);
+}
+\end{lstlisting}
+\subsubheading{Socket Address Structures}
+Generic socket address:
+\begin{lstlisting}
+struct sockaddr {
+    sa_family_t sa_family; /* protocol family */
+    char sa_data[14]; /* address data */
+};
+\end{lstlisting}
+Internet-specific socket address:
+\begin{lstlisting}
+struct sockaddr_in {
+    sa_family_t sin_family;
+    /* address family (always AF_INET) */
+    in_port_t sin_port;
+    /* port num in network byte order */
+    struct in_addr sin_addr;
+    /* IP addr in network byte order */
+    unsigned char sin_zero[8];
+    /* pad to sizeof(struct sockaddr) */
+};
+\end{lstlisting}
+\subsubheading{Accepting a request}
+Blocks waiting for a connection request
+\begin{lstlisting}
+int listenfd; /* listening descriptor */
+int connfd; /* connected descriptor */
+struct sockaddr_in clientaddr;
+int clientlen = sizeof(clientaddr);
+connfd = accept(listenfd, (struct sockaddr*)
+        &clientaddr, &clientlen);
+\end{lstlisting}
+\subsubheading{Socket Options}
+Handy trick to allow us to rerun a server immediately after we kill it (usually have to wait 60 seconds)
+\begin{lstlisting}
+int optval = 1;
+if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,
+        (const void *) &optval, sizeof(int))
+        < 0) {
+    perror("Unable to set socket option");
+    exit(1);
+}
+\end{lstlisting}
+\subsubheading{Identifying the Client}
+The server can determine the domain name and IP address of the client
+\begin{lstlisting}
+char hostname[128];
+/* After accept has populated clientaddr,
+    clientlen */
+int error = getnameinfo((struct sockaddr*)
+        &clientaddr, clientlen, hostname, 128,
+        NULL, 0, 0);
+if (!error) {
+    printf(hostname);
+    printf(inet_ntoa(clientaddr.sin_addr));
+}
+\end{lstlisting}
+\subsubheading{Connected vs. Listening Descriptors}
+\textbf{Listening} descriptor: End point for client connection requests, created once and exists for lifetime of the server.\\
+\textbf{Connected} descriptor: End point for connection between client and server, a new descriptor is created each time the server accepts a connection.
+\subheading{IP Addresses in C}
+\begin{lstlisting}
+typedef uint32_t in_addr_t;
+/* Internet address structure */
+struct in_addr {
+    in_addr_t s_addr;
+    /* network byte order (big-endian) */
+};
+\end{lstlisting}
+Handy network byte-order conversion functions:
+\begin{description}[nolistsep]
+    \item[htonl()] convert uint32\_t from host to network byte order
+    \item[htons()] convert uint16\_t from host to network byte order
+    \item[ntohl()] convert uint32\_t from network to host byte order
+    \item[ntohs()] convert uint16\_t from network to host byte order
+\end{description}
+Function for converting between binary IP addresses and dotted decimal strings:
+\begin{description}[nolistsep]
+    \item[inet\_aton(...)] converts a dotted decimal string to an IP address in network byte order
+    \item[inet\_ntoa(...)] converts an IP address in network byte order to its corresponding dotted decimal string
+\end{description}
+\subheading{Testing Servers Using netcat}
+\texttt{nc <host> <portnumber>} - creates a connection with a server running on \texttt{<host>} and listening on port \texttt{<portnumber>}\\
+\texttt{nc -l -p <portnumber>} - create a netcat server
+\subheading{Iterative Server}
+Iterative servers process one request as a time
+\subheading{Pros and Cons of ...}
+\subsubheading{Process Based Design}
++ Handles multiple connections concurrently\\
++ Simple and straightforward\\
+- Additional overhead for process control\\
+- Nontrivial to share data between processes (Requires IPC mechanisms)
+\subsubheading{Thread Based Design}
++ Easier to share data between threads (may need mutexes/semaphores)\\
+- Do have thread overhead
+
+\heading{Ways for Creating Concurrent Flows}
+\begin{enumerate}[nolistsep]
+    \item Processes
+    \begin{itemize}[nolistsep]
+        \item Kernel automatically interleaves multiple logical flows
+        \item Each flow has its own private address space
+    \end{itemize}
+    \item Threads
+    \begin{itemize}[nolistsep]
+        \item Kernel automatically interleaves multiple logical flows
+        \item Each flow shares the same address space
+    \end{itemize}
+    \item I/O multiplexing with \texttt{select()}
+    \begin{itemize}[nolistsep]
+        \item User manually interleaves multiple logical flows
+        \item Each flow shares the same address space
+        \item Popular for high-performance server designs
+    \end{itemize}
+\end{enumerate}
 
 \end{multicols}
 \end{landscape}
