@@ -469,6 +469,39 @@ Returns the number of ready descriptors and sets each bit of \texttt{readset} to
 - Can be vulnerable to denial of service attack if not implemented correctly
 \subsubheading{poll}
 Does the same thing as select, but different interface.
+\subheading{Network Layers}
+Network code is written as a ``stack'' of layers. We will use the Internet (IP) stack as our example.
+\subsubheading{Physical Layer}
+The medium through which signals travel
+\subsubheading{(Data) Link Layer (2)}
+Talking to nodes which you can reach without an intermediary (Ethernet, WiFi, a node could have a number of link layer interfaces)
+\subsubheading{Network Layer (3)}
+Communicating with any host on the ``internet''. Two tasks: find a node closer to the destination, send the packet in that direction (delegated to the link layer). The protocol for this layer is the Internet Protocol or IP. The address at this layer is the IP address.
+\subsubheading{Transport Layer (4)}
+Transmission Control Protocol (TCP):
+\begin{itemize}[nolistsep]
+    \item Connction oriented
+    \item Stream based
+    \item Delivery is reliable; In order, nothing missing, no duplicates
+\end{itemize}
+User Datagram Protocol
+\begin{itemize}[nolistsep]
+    \item Connectionless
+    \item Message based (think post card)
+    \item ``unreliable''
+\end{itemize}
+If you don't mind messages going missing UDP is faster (no acknowledgment). TCP will not move on until the current part of the stream has been delivered.
+\subsubheading{Application Layer (5)}
+Layer 5 is everything that builds on Layer 4, i.e. any program or application.
+\subheading{IP Header}
+\includegraphics[width=\linewidth]{header.png}
+\textbf{Protocol:} 8 bits, identifies higher level protocol to which packet should be passed (e.g. 6 = TCP, 17 = UDP)\\
+\textbf{Source and Dest. Addresses:} 32 bits each\\
+\textbf{Version:} 4 bits, Currently v4 (v6 around also but uses a different header)\\
+\textbf{Total Length:} 16 bits, datagram length, max length = 65535 bytes, in reality datagrams are ofter limited by the underlying physical network\\
+\textbf{Time-to-live:} 8 bits, decremented at each router, was supposed to count seconds, in practice counts hops, discarded when zero
+\subsubheading{traceroute}
+traceroute uses the ICMP protocol with varying Time-to-live values. Expired messages return to the program to work out the route taken.
 
 \heading{Ways for Creating Concurrent Flows}
 \begin{enumerate}[nolistsep]
@@ -489,6 +522,47 @@ Does the same thing as select, but different interface.
         \item Popular for high-performance server designs
     \end{itemize}
 \end{enumerate}
+
+\heading{IP Addresses}
+\subheading{Classful addressing}
+\includegraphics[width=\linewidth]{classes.png}
+Addresses with all 0's means this network or host, an address with all 1's means all hosts on indicated network
+\includegraphics[width=\linewidth]{specialIP.png}
+\subheading{Forwarding/Routing}
+Each entry associated with network interface to send packet out on: Process is called forwarding (Note: Each router interface has different IP address), routing is the process of building up the tables of information.\\
+If network not listed - packet sent to some default router. Routers only need to know about local hosts and some other networks
+\subheading{Forwarding and Subnets}
+Forwarding table entries - slightly different from: this-network-num.subnet-num.0 or this-network-num.this-subnet-num.host\\
+Router on subnet k knows how to send packets to other subnets and send packets to hosts on subnet k. Subnet k router doesn't need to know about hosts on other subnets.\\
+Forwarding table sometimes called routing table
+\subsubheading{Subnet masks}
+Mask that removes host-id when ANDed with address (bitwise AND).
+% TODO: Add examples here
+\subsubheading{Non-routable IPs}
+Address Allocation for Private Internets\\
+$10.0.0.0\rightarrow10.255.255.255$,
+$172.16.0.0\rightarrow172.31.255.255$,
+$192.168.0.0\rightarrow192.168.255.255$
+\subheading{CIDR - Classless Inter-Domain Routing}
+A,B,C classful networks too inflexible. IP address blocks now allocated in a classless manner using a hierarchy of registries. Networks expressed as base IP address/N where N is the number of bits identifying the network part of the address.
+\subheading{CIDR and Routing}
+ISPs can allocate blocks of addresses within the blocks that have been allocated to them. Routers outside the ISP only need to know about the common prefix. This is called routing prefix aggregation, or supernetting or route summarization.
+\subheading{NAT - Network Address Translation}
+An approach to shortage of IP addresses.
+Basic idea:
+\begin{itemize}[nolistsep]
+    \item Assign an entity (organization) a single IP address
+    \item Use unique, private IP addresses within organization (these same addresses can be used within multiple organizations)
+    \item Change private IP address into organization's IP address when packet leaves network
+\end{itemize}
+Three ranges of private IP addresses exist. Private IP address must not appear on Internet
+\subsubheading{Addresses on the Network}
+Ethernet doesn't understand IP addresses. Actually need to send info with MAC address. Ways of mapping IP addresses to LAN addresses:
+\begin{itemize}[nolistsep]
+    \item Static - have a configuration file or table
+    \item Dynamic - ask over the network
+\end{itemize}
+%TODO: add more here
 
 \end{multicols}
 \end{landscape}
