@@ -780,6 +780,84 @@ Disadvantages
     \item Alternate data streams
 \end{itemize}
 
+\newpage\heading{Shell Commands}
+\subsubheading{cat}
+concatenate files and print on the standard output. When no FILE or when FILE is -, read standard input.\\
+\textbf{Usage:} \texttt{cat [OPTION]... [FILE]...}\\
+\textbf{Options:} (-E, display `\$' at the end of each line), (-n, number all output lines)
+\subsubheading{grep}
+grep searches the named input FILEs for lines containing a match to the given PATTERN. If no files are specified, or if the file ``-'' is given, grep searches standard input.\\
+\textbf{Usage:} \texttt{grep [OPTIONS] [-e PATTERN].. [-f FILE].. [FILE..]} or \texttt{grep PATTERN [FILE...]}\\
+\textbf{Options:} (-i, ignore case), (-v, invert the sense of matching), (-c, count the number of matching lines), (--color[=WHEN], Add color to the output), (-m NUM, Stop reading after NUM matching lines), (-n, Prefix each line number with the line number), (-r, recursive)
+\subsubheading{ls}
+List information about the FILEs (the current directory by default). Default sorts by alphabetical order.\\
+\textbf{Usage:} \texttt{ls [OPTION]... [FILE]...}\\
+\textbf{Options:} (-a, do not ignore entries starting with .), (-d, list directories themselves, not their contents), (-h, print human readable sizes), (-i, print the index number of each file), (-l, use a long listing format), (-r, reverse order while sorting), (-R, list subdirectories recursively), (-s, print the allocated size of each file (in blocks)), (-s, sort by file size (largest first)), (-t, sort by modification time (newest first))
+\subsubheading{ps}
+report a snapshot of the current processes\\
+\textbf{Usage:} \texttt{ps [OPTIONS]}\\
+\textbf{Options:} (-e, select all processes), (-f, does full format listing), (-u userlist, Prints all processes running under userlist user), (--forest, ASCII art process tree)
+\subsubheading{sort}
+sort lines of text files\\
+\textbf{Usage:} \texttt{sort [OPTION]... [FILE]...}\\
+\textbf{Options:} (-f, ignores case), (-r, reverse the result of comparisons)
+%TODO: look into -k option
+%TODO: add uniq command
+\subsubheading{head}
+output the first part of files\\
+\textbf{Usage:} \texttt{head [OPTION]... [FILE]...}\\
+\textbf{Options:} (-n NUM, print the first NUM lines instead of the first 10; with leading `-' print all but the last NUM lines)
+\subsubheading{tail}
+output the last part of files\\
+\textbf{Usage:} \texttt{tail [OPTION]... [FILE]...}\\
+\textbf{Options:} (-f, output data as the file grows), (-n NUM, output the last NUM lines, instead of the last 10; with leading `+' to output starting with line NUM)
+\subsubheading{cut}
+remove sections from each line of files\\
+\textbf{Usage:} \texttt{cut OPTION... [FILE]...}\\
+\textbf{Options:} (-d DELIM, use DELIM instead of TAB for field delimiter), (-f LIST, select only these fields), (-s, do not print lines not containing delimiters)
+\subsubheading{wc}
+print newline, word, and byte counts for each file\\
+\textbf{Usage:} \texttt{wc [OPTION]... [FILE]...}\\
+\textbf{Options:} (-l, prints the number of lines), (-w, prints the number of words)
+\subsubheading{diff}
+compare files line by line\\
+\textbf{Usage:} \texttt{diff [OPTION]... FILES}\\
+\textbf{Options:} (-y, output in side by side columns)
+\subsubheading{chmod}
+change file mode bits\\
+\textbf{Usage:} \texttt{chmod [OPTION].. MODE[,MODE]... [FILE]...}\\
+\textbf{Options:} (-v, output for every file processed), (-R, change files and directories recursively)\\
+\textbf{Mode:} (+, adds permission), (-, removes permission), (u, the user who owns it), (g, users in file's group), (o, other users not in file's group), (a, all users), (r, read permission), (w, write permission), (x, execute permission)
+\subsubheading{ln}
+makes links between files\\
+\textbf{Usage:} \texttt{ln [OPTION]... TARGET} (2nd form), or \texttt{ln [OPTION]... TARGET... DIRECTORY} (3rd form)\\
+In 2nd form, create a link to TARGET in the current directory. In the 3rd form, create lines to each TARGET in DIRECTORY. Hard links by default\\
+\textbf{Options:} (-s, make symbolic links instead of hard)
+\subsubheading{rm}
+remove files or directories\\
+\textbf{Usage:} \texttt{rm [OPTION]... [FILE]...}\\
+\textbf{Options:} (-f, ignore nonexistent files and arguments, never prompt), (-i, prompt before every removal), (-r, remove directories and their contents recursively), (-v, explain what is being done)
+\subsubheading{mkdir}
+make directories\\
+\textbf{Usage:} \texttt{mkdir [OPTION]... DIRECTORY...}\\
+\textbf{Options:} (-p, create any needed parent directories)
+\subsubheading{rmdir}
+remove empty directories\\
+\textbf{Usage:} \texttt{rmdir [OPTION]... DIRECTORY...}\\
+\textbf{Options:} (-p, remove DIRECTORY and its ancestors)
+\subsubheading{cp}
+copy files and directories\\
+\textbf{Usage:} \texttt{cp [OPTION]... SOURCE... DIRECTORY}\\
+\textbf{Options:} (-r, copy directories recursively), (-l, hard link files instead of copying), (-s, make symlink instead of copying), (-f, if an existing destination file cannot be opened, remove it and try again), (-i, prompt before overwrite)
+\subsubheading{mv}
+move (rename) files\\
+\textbf{Usage:} \texttt{mv [OPTION]... SOURCE... DIRECTORY}\\
+\textbf{Options:} (-f, do not prompt before overwriting), (-i, prompt before overwrite)
+\subsubheading{less}
+opposite of more
+\textbf{Usage:} \texttt{less}
+Allows for viewing text one screenful at a time.
+
 \end{multicols}
 \end{landscape}
 \end{document}
