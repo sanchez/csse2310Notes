@@ -564,6 +564,221 @@ Ethernet doesn't understand IP addresses. Actually need to send info with MAC ad
 \end{itemize}
 %TODO: add more here
 
+\heading{File Systems}
+\subheading{Common File System Formats}
+\begin{itemize}[nolistsep]
+    \item Windows - NTFS, FAT, FAT32
+    \item Solaris - UFS (Unix File System)
+    \item Linux - ext2, ReiserFS. ext3, ext4, btrfs
+    \item BSD - FFS (Fast File System)
+    \item Optical disks - ISO09660, Joliet extensions, UDF
+\end{itemize}
+\subheading{File Attributes}
+Each file usually associated with attributes or meta-data:
+\begin{itemize}[nolistsep]
+    \item Name - human readable
+    \item Type - Some systems determine this from name or contents of file
+    \item Location - where is it on the device
+    \item Size
+    \item Protection - who has what permissions
+    \item Owner
+    \item Time and date information
+\end{itemize}
+Particular attributes stored can vary by OS (can vary by file system)
+\subsubheading{File Types}
+How is type of file determined?
+\begin{itemize}[nolistsep]
+    \item Windows - Based on filename extension
+    \item Macintosh (HFS) - 4 character type stored as meta-data e.g. MSWD is ``Microsoft Word''
+    \item Unix - Contents of first part of file (magic number). See \texttt{/etc/magic}
+\end{itemize}
+\subsubheading{Protection}
+Os must allow users to control access to files (Grant or deny access to file operations depending on protection information)\\
+Access lists and groups (Windows - NTFS)
+\begin{itemize}[nolistsep]
+    \item Access list for each file with user name and access type
+    \item Lists can become large and tedious to maintain
+\end{itemize}
+Access control bits (UNIX)
+\begin{itemize}[nolistsep]
+    \item Three categories of user (user, group, others)
+    \item Three types of access privileges (read, write, execute)
+    \item One bit per operation (11110100 = rwxr-x---)
+    \item Unix also supports ACLs
+\end{itemize}
+\subheading{Directories}
+OS (file system) uses numbers, e.g. index number of sector number.\\
+People prefer names.\\
+OS provides directory to map names to file numbers.
+\subsubheading{Hierarchical File Systems}
+Tree-structured name space (Used by all modern operating systems).\\
+Top level:
+\begin{itemize}[nolistsep]
+    \item root directory (UNIX)
+    \item drive names / UNC paths (Windows)
+    \item volume names (MacOS - not Mac OS X)
+\end{itemize}
+Tree-structured name space:
+\begin{itemize}[nolistsep]
+    \item Directory becomes special file on disk
+    \item User programs may read directories, but only system may manipulate directories
+    \item Each directory contains (name, index number) pairs\\
+    Names need not be unique in whole file system, name must be unique in that directory
+\end{itemize}
+\subheading{Mounting File Systems}
+File systems must be mounted before use (Complete directory structure may actually be built out of multiple file systems)\\
+Mounting involves associating a file system device (e.g. disk partition) with a mount point
+\begin{itemize}[nolistsep]
+    \item Mount point is the pathname at which the root of the mounted file system appears
+    \item Windows - drive letters
+    \item Unix - more arbitrary mount points
+\end{itemize}
+\subheading{Links in UNIX}
+\subsubheading{Hard Links (UNIX: ln command)}
+\begin{itemize}[nolistsep]
+    \item Allows multiple links to single file
+    \item Example: ``ln A B''\\
+    initially: A -> file number 100\\
+    after: A, B -> file number 100 (i.e. multiple names for the same file)
+    \item Can't link across file systems
+    \item OS maintains reference counts\\Deletes file only after last link to is is deleted
+\end{itemize}
+Problem: users could create circular links with directories (Reference counting can't reclaim cycles)\\
+Solution: can't hard link directories
+\subsubheading{Soft (symbolic) links (UNIX: ln -s)}
+\begin{itemize}[nolistsep]
+    \item Makes a symbolic pointer from one file to another
+    \item ``ln -s A B''\\
+    initially: A -> file \#100\\
+    after: A -> file \#100, B -> A
+    \item Removing B does not affect A
+    \item Removing A: dangling pointer
+\end{itemize}
+Problem: Circular links can cause infinite loops (e.g. list all files in directory and its subdirectories)\\
+Shortcuts in Windows are a similar concept (not the same)
+\subheading{File Sharing}
+Sharing may occur over a network\\
+Distributed File System
+\begin{itemize}[nolistsep]
+    \item Remote file system directories are visible locally, e.g. via some mount point
+    \item NFS (Sun's Network File System)\\
+    Widely used in UNIX world
+    \item CIFS (Common Internet File System)\\
+    Windows
+\end{itemize}
+
+\heading{Disk Drives}
+Consist of multiple rotating disks:
+\begin{itemize}[nolistsep]
+    \item Each disk contains concentric tracks
+    \item Each track consists of multiple sectors (Bits laid out serially)
+    \item Sector typically 512 bytes (plus preamble, error correction etc)
+\end{itemize}
+\subheading{Cost of Disk Operations}
+In addition to CPU time to start disk operation:
+\textbf{Latency:} time to initiate disk transfer
+\begin{itemize}[nolistsep]
+    \item \textbf{Seek time:} time to position head over correct cylinder
+    \item \textbf{Rotational time:} time for correct sector to rotate until under disk head
+\end{itemize}
+In most cases, disk latency will be some number of milliseconds\\
+\textbf{Bandwidth:} rate of I/O transfer of sectors once initiated
+\subheading{(free space) Fragmentation}
+\textbf{Internal} Fragmentation - Space allocated byt not used (e.g. allocations of 4kbyte disk blocks - a 5kbyte file will be allocated 2 block (8kbytes) - 3kbytes wasted)\\
+\textbf{External} Fragmentation - Unallocated spaces are too small to be useful, or too spread out
+
+\heading{Disks and FS}
+\textbf{Disks:}
+\begin{itemize}[nolistsep]
+    \item Reads and writes occur in terms of whole sectors
+    \item Minimum unit of transfer
+\end{itemize}
+\textbf{Filesystems:}
+\begin{itemize}[nolistsep]
+    \item File system maps file blocks to disk location\\
+    e.g. file 7, block 0 maps to cylinder 1, head 3, sector 6
+    \item A file block might not be the same size as a disk sector
+\end{itemize}
+\subheading{On-Disk Data Structures}
+Most systems fit following profile:
+\begin{itemize}[nolistsep]
+    \item Most files are small
+    \item Most disk space taken up by large files
+    \item I/O operations target both small and large
+\end{itemize}
+Per-file cost must be low, but large files must also have good performance\\
+Some possible structures:
+\begin{itemize}[nolistsep]
+    \item Contiguous allocation (too simple for our purposes)
+    \item Linked Files
+    \item Indexed File
+\end{itemize}
+\subsubheading{Linked Files}
+Maintain list of all free sectors/blocks\\
+In directory entry, keep pointer to first sector/block\\
+In each sector, keep pointer to next sector
+\includegraphics[width=\linewidth]{LinkedFile.png}
+\textbf{Pros and Cons}\\
+Advantages:
+\begin{itemize}[nolistsep]
+    \item No external fragmentation
+    \item Easily handles file size changes
+    \item Good for sequential access
+\end{itemize}
+Disadvantages:
+\begin{itemize}[nolistsep]
+    \item Random access is slow - have to follow the chain of pointers (number of disk seeks required may be large)
+    \item Space taken by pointers (can use clusters of disk blocks and have one pointer per cluster (but increases internal fragmentation))
+\end{itemize}
+Variation: FAT (File Allocation Table)
+\subsubheading{Indexed Files}
+OS keeps array of block pointers for each file\\
+User or OS declares maximum length of file created\\
+OS allocates array (index block) to hold pointers to all blocks when it creates file (But allocates blocks themselves only on demand)\\
+OS fills pointers as it allocates blocks
+\includegraphics[width=\linewidth]{indexAllocation.png}
+\textbf{Pros and Cons}\\
+Advantages
+\begin{itemize}[nolistsep]
+    \item Sequential and random access: easy (i.e. quick to determine which disk block to read next)
+\end{itemize}
+Disadvantages
+\begin{itemize}[nolistsep]
+    \item Sets maximum file size
+    \item Lots of seeks (Data blocks may be spread out over disk)
+\end{itemize}
+Many variations possible
+
+\heading{UNIX file system example}
+Each directory entry contains 14 block pointers\\
+First 12 pointers point to data blocks\\
+13th pointer: one indirection (Points to block of 1024 pointers to 1024 more data blocks)\\
+14th pointer: two indirections (Pointers to block of pointers to indirect blocks)\\
+USed in BSD UNIX 4.3\\
+Variants used in other UNIXes (Directory entries refer to inodes.)\\
+\includegraphics[width=\linewidth]{unixFS.png}
+\subheading{Multilevel Indexed Files: Pros and Cons}
+Advantages
+\begin{itemize}[nolistsep]
+    \item Simple to implement
+    \item Supports incremental file growth
+    \item Small files?
+\end{itemize}
+Disadvantages
+\begin{itemize}[nolistsep]
+    \item Indirect access: inefficient for random access to very large files
+    \item Lots of seeks (data not contiguous)
+\end{itemize}
+\subsubheading{Other Issues}
+\begin{itemize}[nolistsep]
+    \item Block sizes
+    \item Free space management
+    \item Journalling
+    \item Snapshots
+    \item Sparse allocation
+    \item Alternate data streams
+\end{itemize}
+
 \end{multicols}
 \end{landscape}
 \end{document}
