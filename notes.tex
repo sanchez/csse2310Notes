@@ -164,7 +164,7 @@ Each process keeps a separate copy of the code and data. The pages for the priva
 The operating system controls the address ranges (pages) a process can use. It does not decide how that space is used. Management of those pages is the responsibility of the process (Usually vie standard libraries).
 
 \heading{Memory-Related Bugs}
-\begin{itemize}
+\begin{itemize}[nolistsep]
     \item Dereferencing bad pointers
     \item Reading uninitialized memory
     \item Overwriting memory
@@ -196,13 +196,13 @@ Common for the parent to be the only one to continue forking
 \textbf{p} - use PATH to find program\\
 \textbf{e} - provide environment definition
 \subheading{Resource Sharing}
-\begin{itemize}
+\begin{itemize}[nolistsep]
     \item Parent and children share all resources
     \item Children share subset of parent's resources
     \item Parent and child share no resources
 \end{itemize}
 \subheading{Unix Process Hierarchy}
-\includegraphics[width=\linewidth]{processHierarchy.png}
+\includegraphics[width=.5\linewidth]{processHierarchy.png}
 
 \heading{Files}
 \subheading{Unix File Types}
@@ -211,13 +211,13 @@ Binary or text file. Unix does not know the difference
 \subsubheading{Directory file}
 A file that contains the names and locations of other files
 \subsubheading{Links}
-Symbolic links to other files
+Symbolic links to other files\\
 \subsubheading{Character special and block special files}
 Terminals (character special) and disks (block special)
 \subsubheading{FIFO (named pipe)}
 A file type used for interprocess communication
 \subsubheading{Socket}
-A file type used for network communication between processes
+A file type used for network communication between processes\\
 \subheading{Sharing Files}
 A child process inherits its parent's open files. \texttt{refcnt} counts the number of references.
 
@@ -439,7 +439,7 @@ Iterative servers process one request as a time
 - Nontrivial to share data between processes (Requires IPC mechanisms)
 \subsubheading{Thread Based Design}
 + Easier to share data between threads (may need mutexes/semaphores)\\
-- Do have thread overhead
+- Do have thread overhead\\
 \subheading{Event-Based Concurrent Servers}
 Maintain a set of connected descriptors and service each as new data arrives. Repeat the following forever:
 \begin{itemize}[nolistsep]
