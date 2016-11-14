@@ -144,8 +144,8 @@ Case. Until - do - done. Done.
 One of several methods of implementing virtual memory. Divide physical memory into fixed-sized blocks called page frames (size is power of 2, usually between 512 bytes and 8192 bytes). Divide logical memory into blocks of same size called pages. Keep track of all free frames. To run a program of n pages, need to find n free frames and load program. Set up a page table to translate logical to physical addresses.
 \subheading{Address Translation Scheme}
 \textbf{Page Number} (p) - used as an index into a page table which contains base address of each page in physical memory\\
-\textbf{Page Offset} (d) - combined with base address to define the physical memory address that is sent to the memory unit
-\includegraphics[width=0.5\linewidth]{pageTable.png}
+\textbf{Page Offset} (d) - combined with base address to define the physical memory address that is sent to the memory unit\\
+\includegraphics[width=\linewidth]{pageTable.png}
 \subheading{Implementation of Page Table}
 Page table is kept in main memory. The two memory access problem can be solved by the use of a special fast-lookup hardware cache called associative memory or translation look-aside buffers (TLBs)
 \includegraphics[width=\linewidth]{TLB.png}
